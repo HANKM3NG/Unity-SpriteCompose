@@ -2,7 +2,6 @@
 .vscode/*
 Library/*
 obj/*
-ProjectSettings/*
 Temp/*
 Logs/*
 *.ase
