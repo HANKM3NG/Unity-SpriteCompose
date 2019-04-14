@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class SpriteCompose : MonoBehaviour {
@@ -38,10 +39,24 @@ public class SpriteCompose : MonoBehaviour {
         tempTexture2D.Apply ();
 
         Rect texRect = new Rect (0, 0, tempTexture2D.width, tempTexture2D.height);
-        Sprite sp = Sprite.Create (tempTexture2D, texRect, new Vector2 (0.5f, 0.5f));
-        Result.sprite = sp;
+        Result.sprite = Sprite.Create (tempTexture2D, texRect, new Vector2 (0.5f, 0.5f));;
+
+        SaveTextureToFile (tempTexture2D, "Resources/GenSprites/tempTexture2D");
     }
 
+    private void SaveTextureToFile (Texture2D texture, string path) {
+        byte[] bytes = texture.EncodeToPNG ();
+        FileStream file = File.Open (Application.dataPath + "/" + path + ".png", FileMode.Create);
+        BinaryWriter binary = new BinaryWriter (file);
+        binary.Write (bytes);
+        file.Close ();
+
+        //  删除内存里的Texture2D
+        // Texture2D.DestroyImmediate(texture);
+        // texture = null;
+
+        Debug.LogFormat ("保存文件到路径 {0}， 需要切换编辑器应用程序才能看到Assets目录中的文件更新", path);
+    }
 }
 
 [Serializable]
