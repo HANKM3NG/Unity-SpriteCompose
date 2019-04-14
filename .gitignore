@@ -1,7 +1,9 @@
-﻿# Add any directories, files, or patterns you don't want to be tracked by version control
+# Add any directories, files, or patterns you don't want to be tracked by version control
 .vscode/*
 Library/*
 obj/*
 Temp/*
 Logs/*
 *.ase
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
