@@ -6,11 +6,12 @@ using UnityEditor;
 [CustomEditor (typeof (SpriteCompose))]
 public class SpriteComposeEditor : Editor {
     public override void OnInspectorGUI () {
-            SpriteCompose s = (SpriteCompose) target;
-            if (GUILayout.Button ("Compose")) {
-                s.Compose();
-            }   
-            DrawDefaultInspector ();
+        SpriteCompose s = (SpriteCompose) target;
+        if (GUILayout.Button ("Compose")) {
+            s.Compose ();
+            AssetDatabase.Refresh ();   //刷新Asset资源目录
         }
+        DrawDefaultInspector ();
+    }
 }
 #endif

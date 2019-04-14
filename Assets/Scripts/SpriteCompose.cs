@@ -38,13 +38,20 @@ public class SpriteCompose : MonoBehaviour {
         tempTexture2D.filterMode = FilterMode.Point;
         tempTexture2D.Apply ();
 
-        Rect texRect = new Rect (0, 0, tempTexture2D.width, tempTexture2D.height);
-        Result.sprite = Sprite.Create (tempTexture2D, texRect, new Vector2 (0.5f, 0.5f));;
 
         SaveTextureToFile (tempTexture2D, "Resources/GenSprites/tempTexture2D");
     }
 
+    /// <summary>
+    /// 把生成的贴图保存为文件
+    /// </summary>
+    /// <param name="texture"></param>
+    /// <param name="path"></param>
     private void SaveTextureToFile (Texture2D texture, string path) {
+        //  把贴图贴到目标物体的spriteRender上
+        Rect texRect = new Rect (0, 0, tempTexture2D.width, tempTexture2D.height);
+        Result.sprite = Sprite.Create (tempTexture2D, texRect, new Vector2 (0.5f, 0.5f));;
+
         byte[] bytes = texture.EncodeToPNG ();
         FileStream file = File.Open (Application.dataPath + "/" + path + ".png", FileMode.Create);
         BinaryWriter binary = new BinaryWriter (file);
@@ -55,7 +62,7 @@ public class SpriteCompose : MonoBehaviour {
         // Texture2D.DestroyImmediate(texture);
         // texture = null;
 
-        Debug.LogFormat ("保存文件到路径 {0}， 需要切换编辑器应用程序才能看到Assets目录中的文件更新", path);
+        Debug.LogFormat ("Save texture file to path: {0}.png", path);
     }
 }
 
