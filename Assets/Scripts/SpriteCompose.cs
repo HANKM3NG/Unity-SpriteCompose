@@ -38,7 +38,7 @@ public class SpriteCompose : MonoBehaviour {
         tempTexture2D.Apply ();
 
         Rect texRect = new Rect (0, 0, tempTexture2D.width, tempTexture2D.height);
-        Sprite sp = Sprite.Create (tempTexture2D, texRect, Vector2.zero);
+        Sprite sp = Sprite.Create (tempTexture2D, texRect, new Vector2 (0.5f, 0.5f));
         Result.sprite = sp;
     }
 
