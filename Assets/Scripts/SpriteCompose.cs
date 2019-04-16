@@ -10,23 +10,31 @@ public class SpriteCompose : MonoBehaviour {
 
     public void Compose () {
         // TODO: 计算出需要多少格，算出将要生成贴图的大小，生成一张空的新图，然后往里塞
-        Texture2D composedGridTexture = ComposeSpritesGrid(spriteData);
+        Texture2D composedGridTexture = ComposeSpritesGrid (spriteData);
+
+        // Texture2D[] textures = new Texture2D[4];
+        // for (int i = 0; i < textures.Length; i++) {
+        //     textures[i] = (Texture2D) Resources.Load ("Resources/SpriteSortPoint/sp" + i + 1);
+        // }
+
+        // Texture2D cTexture = CreateNewTexture (64, 16, 16, 16, textures);
+        // SaveTextureToFile(cTexture,"Resources/GenSprites/createIMG");
 
         // Rect texRect = new Rect (0, 0, tempTexture2D.width, tempTexture2D.height);
         // Result.sprite = Sprite.Create (tempTexture2D, texRect, new Vector2 (0.5f, 0.5f));;
 
-        Texture2D composedTexture = ComposeTextures (targetTexture2D, composedGridTexture, new Vector2Int (0, 16));
+        Texture2D composedTexture = ComposeTextures (targetTexture2D, composedGridTexture, new Vector2Int (16, 16));
         SaveTextureToFile (composedTexture, "Resources/GenSprites/resultIMG");
     }
 
     /// <summary>
-    /// 根据多张Sprite即其层级关系，合并出一张混合图
+    /// 根据多张Sprite和其层级关系，合并出一张混合图
     /// </summary>
     /// <param name="spData"></param>
     /// <returns></returns>
-    private Texture2D ComposeSpritesGrid(List<SpriteData> spData){
+    private Texture2D ComposeSpritesGrid (List<SpriteData> spData) {
         Texture2D texture = new Texture2D (16, 16);
-        Color tempColor;
+        Color color;
         spData.Sort ((a, b) => -a.level.CompareTo (b.level));
         Vector2Int usedPos = new Vector2Int (-1, -1);
         int x, y;
@@ -36,9 +44,9 @@ public class SpriteCompose : MonoBehaviour {
                     for (int k = 0; k < spData.Count; k++) {
                         x = (int) spData[k].sprite.textureRect.x;
                         y = (int) spData[k].sprite.textureRect.y;
-                        tempColor = spData[k].sprite.texture.GetPixel (x + i, y + j);
-                        if (tempColor.a != 0 && usedPos != new Vector2Int (i, j)) {
-                            texture.SetPixel (i, j, tempColor);
+                        color = spData[k].sprite.texture.GetPixel (x + i, y + j);
+                        if (color.a != 0 && usedPos != new Vector2Int (i, j)) {
+                            texture.SetPixel (i, j, color);
                             usedPos = new Vector2Int (i, j);
                         } else {
                             continue;
@@ -67,13 +75,32 @@ public class SpriteCompose : MonoBehaviour {
             for (int j = 0; j < addIMG.height; j++) {
                 Color c = addIMG.GetPixel (i, j);
                 if (c.a != 0) {
-                    colors[texture.width * j + i] = c;
+                    colors[texture.width * (j + drawPos.y) + (i + drawPos.x)] = c;
                 }
             }
         }
         texture.SetPixels (0, 0, baseIMG.width, baseIMG.height, colors);
         texture.Apply ();
         return texture;
+    }
+
+    private Texture2D CreateNewTexture (int width, int height, int gridWidth, int gridHeight, Texture2D[] textures) {
+        Texture2D texture = new Texture2D (width, height);
+        Color[] colors = texture.GetPixels ();
+        for (int i = 0; i < textures.Length; i++) {
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    if (x >= gridWidth * i && x < gridWidth * (i + 1) && y >= gridHeight * i && y < gridHeight * (i + 1)) {
+                        Color c = textures[i].GetPixel (x, y);
+                        colors[texture.width * y + x] = c;
+                    }
+                }
+            }
+        }
+        texture.SetPixels (0, 0, width, height, colors);
+        texture.Apply ();
+        return texture;
+
     }
 
     /// <summary>
