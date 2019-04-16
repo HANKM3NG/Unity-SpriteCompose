@@ -15,7 +15,7 @@ public class EditorResourceSetting : AssetPostprocessor
         if (Regex.IsMatch(folderStr, KeyWords))
         {
             textureImporter.textureType = TextureImporterType.Sprite;
-            // textureImporter.spriteImportMode = SpriteImportMode.Single;
+            textureImporter.spriteImportMode = SpriteImportMode.Single;
             textureImporter.mipmapEnabled = false;
             textureImporter.isReadable = true;
             textureImporter.filterMode = FilterMode.Point;
