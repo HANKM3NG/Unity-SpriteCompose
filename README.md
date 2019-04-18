@@ -7,4 +7,6 @@
 * 组合成的图片保存到Resources目录为图片文件
 * 自动修改图片文件的属性：如TextureType = Sprite等
 * 生成文件后自动刷新项目文件目录 AssetDatabase.Refresh ()
+* 懒人专用功能1： Resources目录内，文件夹名包含Sprite的文件Type自动改为Sprite并自动修改其他相关设置
+* 懒人专用功能2： Resources目录内，文件夹名包含Sprite的文件名后缀包含_multiple的文件自动改为multiple，并且自动切图、改名
 

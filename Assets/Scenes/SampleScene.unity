@@ -249,7 +249,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &576440800
 Transform:
   m_ObjectHideFlags: 0
@@ -327,7 +327,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.16, y: 0.16}
+  m_Size: {x: 0.64, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -363,7 +363,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &857544422
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -488,7 +488,7 @@ SpriteRenderer:
   m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1070079471
@@ -548,17 +548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd7d83346f1c439418f5ebb47430f279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Result: {fileID: 857544422}
-  targetTexture2D: {fileID: 2800000, guid: 9e960b801aaaab141bf53c3c9b1bb91a, type: 3}
-  spriteData:
-  - sprite: {fileID: 21300006, guid: ca8ed255cb4a0c24691e4413ba18026a, type: 3}
-    level: 3
-  - sprite: {fileID: 21300004, guid: ca8ed255cb4a0c24691e4413ba18026a, type: 3}
-    level: 2
-  - sprite: {fileID: 21300002, guid: ca8ed255cb4a0c24691e4413ba18026a, type: 3}
-    level: 1
-  - sprite: {fileID: 21300000, guid: ca8ed255cb4a0c24691e4413ba18026a, type: 3}
-    level: 0
+  baseTexture: {fileID: 2800000, guid: 749ae2d7d3369294d8e433a842f32da7, type: 3}
 --- !u!213 &1525674256
 Sprite:
   m_ObjectHideFlags: 0
@@ -751,7 +741,7 @@ Sprite:
         format: 0
         dimension: 0
       m_DataSize: 80
-      _typelessdata: 0ad7a3bd0ad7a33d000000000ad7a33d0ad7a33d000000000ad7a3bd0ad7a3bd000000000ad7a33d0ad7a3bd000000000000000000000000000000000000000000000000000000000000000000000000
+      _typelessdata: 0ad7a3bd0ad7a33d000000000ad7a33d0ad7a33d000000000ad7a3bd0ad7a3bd000000000ad7a33d0ad7a3bd00000000000000000000803f0000803f0000803f00000000000000000000803f00000000
     m_Bindpose: []
     textureRect:
       serializedVersion: 2
@@ -829,7 +819,7 @@ SpriteRenderer:
   m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1728302176
@@ -908,7 +898,7 @@ SpriteRenderer:
   m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1999694635
