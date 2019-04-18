@@ -5,58 +5,74 @@ using UnityEngine;
 
 public class SpriteCompose : MonoBehaviour {
     public Texture2D baseTexture;
+
     // private SpriteData[] baseSpriteData;
     private List<SpriteData> upperSpriteData;
+    private string path = "Sprites/ground_multiple";
 
     public void Compose () {
-        // TODO: 计算出需要多少格，算出将要生成贴图的大小，生成一张空的新图，然后往里塞
+        SpriteData[] data = GetBaseSpriteData (path);
+        // Texture2D composedGridTexture = ComposeSpritesGrid (upperSpriteData);
+        // Texture2D composedTexture = ComposeTextures (baseTexture, composedGridTexture, new Vector2Int (16, 16));
+        // SaveTextureToFile (composedTexture, "Resources/GenSprites/resultIMG");
+    }
 
-        // Texture2D[] textures = new Texture2D[4];
-        // for (int i = 0; i < textures.Length; i++) {
-        //     textures[i] = (Texture2D) Resources.Load ("Resources/SpriteSortPoint/sp" + i + 1);
-        // }
-
-        // Texture2D cTexture = CreateNewTexture (64, 16, 16, 16, textures);
-        // SaveTextureToFile(cTexture,"Resources/GenSprites/createIMG");
-
-        // Rect texRect = new Rect (0, 0, tempTexture2D.width, tempTexture2D.height);
-        // Result.sprite = Sprite.Create (tempTexture2D, texRect, new Vector2 (0.5f, 0.5f));
-
-        //  1、读现有贴图
-        //  2、把现有贴图分类，中间、四外角、四内角
-        //  3、合并
-        Sprite[] sprites = Resources.LoadAll<Sprite> ("Sprites/ground_multiple");
+    /// <summary>
+    /// 读取基础贴图的Sprite数组，组织SpriteData数据，区分中间、4外角、4内角
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    private SpriteData[] GetBaseSpriteData (string path) {
+        Sprite[] sprites = Resources.LoadAll<Sprite> (path);
         SpriteData[] baseSpriteData = new SpriteData[sprites.Length];
 
         string[][] sArray = new string[sprites.Length][];
         int[][] sInt = new int[sprites.Length][];
 
         for (int i = 0; i < sprites.Length; i++) {
-            var data = baseSpriteData[i] = new SpriteData();
-            
+            var data = baseSpriteData[i] = new SpriteData ();
             data.sprite = sprites[i];
             sArray[i] = sprites[i].name.Split (',');
             sInt[i] = new int[2] { int.Parse (sArray[i][0]), int.Parse (sArray[i][1]) };
             data.pos = new Vector2Int (sInt[i][0], sInt[i][1]);
-            // if (sInt[i][0] == 1 && sInt[i][1] % 3 == 1) { //M
-            //     data.layer = 0;
-            //     data.ornt = ORNT.M;
-            // } else {
-            //     data.layer = 1;
-            //     if (sInt[i][0] == 0 && sInt[i][1] % 3 == 1) { //N
-            //         data.ornt = ORNT.N;
-            //     } else if (sInt[i][0] == 2 && sInt[i][1] % 3 == 1) { //S
-            //         data.ornt = ORNT.S;
-            //     } else if (sInt[i][0] == 1 && sInt[i][1] % 3 == 0) { //W
-            //         data.ornt = ORNT.W;
-            //     } else if (sInt[i][0] == 1 && sInt[i][1] % 3 == 2) { //E
-            //         data.ornt = ORNT.E;
-            //     }
-            // }
+            if (sInt[i][0] == 1 && sInt[i][1] % 3 == 1) { //M
+                data.layer = 0;
+                data.ornt = ORNT.M;
+            } else
+            if (sInt[i][0] == 0 && sInt[i][1] % 3 == 1) { //N
+                data.layer = 1;
+                data.ornt = ORNT.N;
+            } else
+            if (sInt[i][0] == 2 && sInt[i][1] % 3 == 1) { //S
+                data.layer = 1;
+                data.ornt = ORNT.S;
+            } else
+            if (sInt[i][0] == 1 && sInt[i][1] % 3 == 0) { //W
+                data.layer = 1;
+                data.ornt = ORNT.W;
+            } else
+            if (sInt[i][0] == 1 && sInt[i][1] % 3 == 2) { //E
+                data.layer = 1;
+                data.ornt = ORNT.E;
+            } else
+            if (sInt[i][0] == 0 && sInt[i][1] % 3 == 0) { //NW
+                data.layer = 2;
+                data.ornt = ORNT.NW;
+            } else
+            if (sInt[i][0] == 0 && sInt[i][1] % 3 == 2) { //NE
+                data.layer = 2;
+                data.ornt = ORNT.NE;
+            } else
+            if (sInt[i][0] == 2 && sInt[i][1] % 3 == 2) { //SE
+                data.layer = 2;
+                data.ornt = ORNT.SE;
+            } else
+            if (sInt[i][0] == 2 && sInt[i][1] % 3 == 0) { //SW
+                data.layer = 2;
+                data.ornt = ORNT.SW;
+            }
         }
-        // Texture2D composedGridTexture = ComposeSpritesGrid (upperSpriteData);
-        // Texture2D composedTexture = ComposeTextures (baseTexture, composedGridTexture, new Vector2Int (16, 16));
-        // SaveTextureToFile (composedTexture, "Resources/GenSprites/resultIMG");
+        return baseSpriteData;
     }
 
     /// <summary>
@@ -87,7 +103,6 @@ public class SpriteCompose : MonoBehaviour {
                 }
             }
         }
-
         texture.filterMode = FilterMode.Point;
         texture.Apply ();
         return texture;
@@ -167,7 +182,6 @@ public enum ORNT {
     NW
 }
 
-// [Serializable]
 public class SpriteData {
     public Sprite sprite = null;
     public Vector2Int pos = new Vector2Int (-1, -1);
