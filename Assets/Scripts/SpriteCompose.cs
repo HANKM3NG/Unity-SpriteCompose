@@ -4,11 +4,15 @@ using System.IO;
 using UnityEngine;
 
 public class SpriteCompose : MonoBehaviour {
+    // public SpriteRenderer result;
     private string path = "Sprites/ground_multiple";
 
     public void Compose () {
         SpriteData[] baseSpriteData = GetBaseSpriteData (path);
-        Debug.Log("Base Sprite Data Ready");
+
+        Texture2D newTexture = CreateGenTexture (64, 64, 16, 16, baseSpriteData);
+        SaveTextureToFile (newTexture, "Resources/GenSprites/genTex");
+        Debug.Log ("Base Sprite Data Ready");
         // Texture2D composedGridTexture = ComposeSpritesGrid (upperSpriteData);
         // Texture2D composedTexture = ComposeTextures (baseTexture, composedGridTexture, new Vector2Int (16, 16));
         // SaveTextureToFile (composedTexture, "Resources/GenSprites/resultIMG");
@@ -32,7 +36,7 @@ public class SpriteCompose : MonoBehaviour {
             sArray[i] = sprites[i].name.Split (',');
             sInt[i] = new int[2] { int.Parse (sArray[i][0]), int.Parse (sArray[i][1]) };
             data.pos = new Vector2Int (sInt[i][0], sInt[i][1]);
-            data.layer = Mathf.RoundToInt(sInt[i][1] /3);
+            data.layer = Mathf.RoundToInt (sInt[i][1] / 3);
             if (sInt[i][0] == 1 && sInt[i][1] % 3 == 1) { //M
                 data.ornt = ORNT.M;
             } else
@@ -64,13 +68,60 @@ public class SpriteCompose : MonoBehaviour {
         return baseSpriteData;
     }
 
+    private Texture2D CreateGenTexture (int width, int height, int gridWidth, int gridHeight, SpriteData[] baseSpriteData) {
+        Texture2D texture = new Texture2D (width, height);
+        // if (baseSpriteData.Length > 0) {
+        //     // SpriteData[] sortSpriteData = baseSpriteData;
+        //     // Color color;
+        //     // int x, y;
+        //     // Array.Sort (sortSpriteData, (a, b) => -a.layer.CompareTo (b.layer));
+        //     List<SpriteData> gridM = new List<SpriteData> ();
+        //     List<SpriteData> gridN = new List<SpriteData> ();
+        //     for (int i = 0; i < baseSpriteData.Length; i++) {
+        //         if (baseSpriteData[i].ornt == ORNT.M) {
+        //             gridM.Add (baseSpriteData[i]);
+        //         } else
+        //         if (baseSpriteData[i].ornt == ORNT.N) {
+        //             gridN.Add (baseSpriteData[i]);
+        //         }
+        //     }
+        //     List<SpriteData> mixGrid = new List<SpriteData> ();
+        //     mixGrid.Add (gridM[0]);
+        //     mixGrid.Add (gridN[1]);
+        //     mixGrid.Add (gridN[2]);
+        //     mixGrid.Add (gridN[3]);
+
+        //     Texture2D newGrid = ComposeSpritesGrid (mixGrid);
+        //     Color[] colors = newGrid.GetPixels ();
+        //     newGrid.SetPixels (0, 0, newGrid.width, newGrid.height, colors);
+        //     newGrid.Apply ();
+        //     Debug.Log (" ");
+        // }
+        Sprite sp = baseSpriteData[19].sprite;
+        
+        return GetTexture2DFromSprite(sp);
+    }
+
+    private Texture2D GetTexture2DFromSprite(Sprite sp){
+        Color[] colors = sp.texture.GetPixels (
+            (int) sp.textureRect.x,
+            (int) sp.textureRect.y,
+            (int) sp.textureRect.width,
+            (int) sp.textureRect.height
+        );
+        Texture2D texture = new Texture2D ((int) sp.textureRect.width, (int)sp.textureRect.height);
+        texture.SetPixels(colors);
+        texture.Apply();
+        return texture;
+    }
+
     /// <summary>
     /// 根据多张Sprite和其层级关系，合并出一张混合图
     /// </summary>
     /// <param name="spriteData"></param>
     /// <returns></returns>
     private Texture2D ComposeSpritesGrid (List<SpriteData> spriteData) {
-        Texture2D texture = new Texture2D (16, 16);
+        Texture2D texture = new Texture2D ((int) spriteData[0].sprite.textureRect.width, (int) spriteData[0].sprite.textureRect.height);
         Color color;
         spriteData.Sort ((a, b) => -a.layer.CompareTo (b.layer));
         Vector2Int usedPos = new Vector2Int (-1, -1);
@@ -143,7 +194,7 @@ public class SpriteCompose : MonoBehaviour {
     /// 把Texture2D保存为文件
     /// </summary>
     /// <param name="texture"></param>
-    /// <param name="path"></param>
+    /// <param name="path">Resources/ + 文件夹名 + 文件名 (不含后缀名)</param>
     private void SaveTextureToFile (Texture2D texture, string path) {
         byte[] bytes = texture.EncodeToPNG ();
         FileStream file = File.Open (Application.dataPath + "/" + path + ".png", FileMode.Create);
@@ -174,6 +225,6 @@ public enum ORNT {
 public class SpriteData {
     public Sprite sprite = null;
     public Vector2Int pos = new Vector2Int (-1, -1);
-    public int layer = -1;//混合图片时，layer值大的覆盖小的
+    public int layer = -1; //混合图片时，layer值大的覆盖小的
     public ORNT ornt = ORNT.M;
 }
