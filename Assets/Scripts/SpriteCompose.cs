@@ -4,14 +4,11 @@ using System.IO;
 using UnityEngine;
 
 public class SpriteCompose : MonoBehaviour {
-    public Texture2D baseTexture;
-
-    // private SpriteData[] baseSpriteData;
-    private List<SpriteData> upperSpriteData;
     private string path = "Sprites/ground_multiple";
 
     public void Compose () {
-        SpriteData[] data = GetBaseSpriteData (path);
+        SpriteData[] baseSpriteData = GetBaseSpriteData (path);
+        Debug.Log("Base Sprite Data Ready");
         // Texture2D composedGridTexture = ComposeSpritesGrid (upperSpriteData);
         // Texture2D composedTexture = ComposeTextures (baseTexture, composedGridTexture, new Vector2Int (16, 16));
         // SaveTextureToFile (composedTexture, "Resources/GenSprites/resultIMG");
@@ -20,7 +17,7 @@ public class SpriteCompose : MonoBehaviour {
     /// <summary>
     /// 读取基础贴图的Sprite数组，组织SpriteData数据，区分中间、4外角、4内角
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="path">文件夹名/文件名（不含后缀名）</param>
     /// <returns></returns>
     private SpriteData[] GetBaseSpriteData (string path) {
         Sprite[] sprites = Resources.LoadAll<Sprite> (path);
@@ -35,40 +32,32 @@ public class SpriteCompose : MonoBehaviour {
             sArray[i] = sprites[i].name.Split (',');
             sInt[i] = new int[2] { int.Parse (sArray[i][0]), int.Parse (sArray[i][1]) };
             data.pos = new Vector2Int (sInt[i][0], sInt[i][1]);
+            data.layer = Mathf.RoundToInt(sInt[i][1] /3);
             if (sInt[i][0] == 1 && sInt[i][1] % 3 == 1) { //M
-                data.layer = 0;
                 data.ornt = ORNT.M;
             } else
             if (sInt[i][0] == 0 && sInt[i][1] % 3 == 1) { //N
-                data.layer = 1;
                 data.ornt = ORNT.N;
             } else
             if (sInt[i][0] == 2 && sInt[i][1] % 3 == 1) { //S
-                data.layer = 1;
                 data.ornt = ORNT.S;
             } else
             if (sInt[i][0] == 1 && sInt[i][1] % 3 == 0) { //W
-                data.layer = 1;
                 data.ornt = ORNT.W;
             } else
             if (sInt[i][0] == 1 && sInt[i][1] % 3 == 2) { //E
-                data.layer = 1;
                 data.ornt = ORNT.E;
             } else
             if (sInt[i][0] == 0 && sInt[i][1] % 3 == 0) { //NW
-                data.layer = 2;
                 data.ornt = ORNT.NW;
             } else
             if (sInt[i][0] == 0 && sInt[i][1] % 3 == 2) { //NE
-                data.layer = 2;
                 data.ornt = ORNT.NE;
             } else
             if (sInt[i][0] == 2 && sInt[i][1] % 3 == 2) { //SE
-                data.layer = 2;
                 data.ornt = ORNT.SE;
             } else
             if (sInt[i][0] == 2 && sInt[i][1] % 3 == 0) { //SW
-                data.layer = 2;
                 data.ornt = ORNT.SW;
             }
         }
@@ -78,21 +67,21 @@ public class SpriteCompose : MonoBehaviour {
     /// <summary>
     /// 根据多张Sprite和其层级关系，合并出一张混合图
     /// </summary>
-    /// <param name="spData"></param>
+    /// <param name="spriteData"></param>
     /// <returns></returns>
-    private Texture2D ComposeSpritesGrid (List<SpriteData> spData) {
+    private Texture2D ComposeSpritesGrid (List<SpriteData> spriteData) {
         Texture2D texture = new Texture2D (16, 16);
         Color color;
-        spData.Sort ((a, b) => -a.layer.CompareTo (b.layer));
+        spriteData.Sort ((a, b) => -a.layer.CompareTo (b.layer));
         Vector2Int usedPos = new Vector2Int (-1, -1);
         int x, y;
-        if (spData.Count > 0) {
+        if (spriteData.Count > 0) {
             for (int i = 0; i < 16; i++) {
                 for (int j = 0; j < 16; j++) {
-                    for (int k = 0; k < spData.Count; k++) {
-                        x = (int) spData[k].sprite.textureRect.x;
-                        y = (int) spData[k].sprite.textureRect.y;
-                        color = spData[k].sprite.texture.GetPixel (x + i, y + j);
+                    for (int k = 0; k < spriteData.Count; k++) {
+                        x = (int) spriteData[k].sprite.textureRect.x;
+                        y = (int) spriteData[k].sprite.textureRect.y;
+                        color = spriteData[k].sprite.texture.GetPixel (x + i, y + j);
                         if (color.a != 0 && usedPos != new Vector2Int (i, j)) {
                             texture.SetPixel (i, j, color);
                             usedPos = new Vector2Int (i, j);
@@ -185,6 +174,6 @@ public enum ORNT {
 public class SpriteData {
     public Sprite sprite = null;
     public Vector2Int pos = new Vector2Int (-1, -1);
-    public int layer = -1;
+    public int layer = -1;//混合图片时，layer值大的覆盖小的
     public ORNT ornt = ORNT.M;
 }
