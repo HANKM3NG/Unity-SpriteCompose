@@ -5,14 +5,12 @@ using UnityEngine;
 
 public class SpriteCompose : MonoBehaviour {
     // public SpriteRenderer result;
-    private string path = "Sprites/ground_multiple";
+    public Texture2D baseTexture;
+    private string tpath = "MultipleSprites/ground";//文件夹名/文件名（不含后缀名）
 
     public void Compose () {
-        SpriteData[] baseSpriteData = GetBaseSpriteData (path);
-
-        Texture2D newTexture = CreateGenTexture (64, 64, 16, 16, baseSpriteData);
+        Texture2D newTexture = CreateGenTexture (64, 64, 16, 16, GetBaseSpriteData ());
         SaveTextureToFile (newTexture, "Resources/GenSprites/genTex");
-        Debug.Log ("Base Sprite Data Ready");
         // Texture2D composedGridTexture = ComposeSpritesGrid (upperSpriteData);
         // Texture2D composedTexture = ComposeTextures (baseTexture, composedGridTexture, new Vector2Int (16, 16));
         // SaveTextureToFile (composedTexture, "Resources/GenSprites/resultIMG");
@@ -21,10 +19,10 @@ public class SpriteCompose : MonoBehaviour {
     /// <summary>
     /// 读取基础贴图的Sprite数组，组织SpriteData数据，区分中间、4外角、4内角
     /// </summary>
-    /// <param name="path">文件夹名/文件名（不含后缀名）</param>
+    /// <param name="path"></param>
     /// <returns></returns>
-    private SpriteData[] GetBaseSpriteData (string path) {
-        Sprite[] sprites = Resources.LoadAll<Sprite> (path);
+    private SpriteData[] GetBaseSpriteData () {
+        Sprite[] sprites = Resources.LoadAll<Sprite> (tpath);
         SpriteData[] baseSpriteData = new SpriteData[sprites.Length];
 
         string[][] sArray = new string[sprites.Length][];
@@ -98,20 +96,20 @@ public class SpriteCompose : MonoBehaviour {
         //     Debug.Log (" ");
         // }
         Sprite sp = baseSpriteData[19].sprite;
-        
-        return GetTexture2DFromSprite(sp);
+
+        return GetTexture2DFromSprite (sp);
     }
 
-    private Texture2D GetTexture2DFromSprite(Sprite sp){
+    private Texture2D GetTexture2DFromSprite (Sprite sp) {
         Color[] colors = sp.texture.GetPixels (
             (int) sp.textureRect.x,
             (int) sp.textureRect.y,
             (int) sp.textureRect.width,
             (int) sp.textureRect.height
         );
-        Texture2D texture = new Texture2D ((int) sp.textureRect.width, (int)sp.textureRect.height);
-        texture.SetPixels(colors);
-        texture.Apply();
+        Texture2D texture = new Texture2D ((int) sp.textureRect.width, (int) sp.textureRect.height);
+        texture.SetPixels (colors);
+        texture.Apply ();
         return texture;
     }
 
