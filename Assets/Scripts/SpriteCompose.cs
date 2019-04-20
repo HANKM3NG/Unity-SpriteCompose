@@ -4,16 +4,54 @@ using System.IO;
 using UnityEngine;
 
 public class SpriteCompose : MonoBehaviour {
-    // public SpriteRenderer result;
-    public Texture2D baseTexture;
-    private string tpath = "MultipleSprites/ground";//文件夹名/文件名（不含后缀名）
+    public int maxDrawTextureWidth = 80;
+    public string baseSpritePath = "MultipleSprites/ground"; //文件夹名/文件名（不含后缀名）
+    public string saveTexturePath = "Resources/GenSprites/genTex";
+    private int gridWidth = 16;
+    private int gridHeight = 16;
+    private int textureWidth = 0;
+    private int textureHeight = 0;
 
     public void Compose () {
-        Texture2D newTexture = CreateGenTexture (64, 64, 16, 16, GetBaseSpriteData ());
-        SaveTextureToFile (newTexture, "Resources/GenSprites/genTex");
-        // Texture2D composedGridTexture = ComposeSpritesGrid (upperSpriteData);
-        // Texture2D composedTexture = ComposeTextures (baseTexture, composedGridTexture, new Vector2Int (16, 16));
-        // SaveTextureToFile (composedTexture, "Resources/GenSprites/resultIMG");
+        Texture2D genTexture = CreateGenTexture ();
+        SaveTextureToFile (genTexture, saveTexturePath);
+    }
+
+    private Texture2D CreateGenTexture () {
+        SpriteData[] baseSpriteData = GetBaseSpriteData ();
+        List<SpriteData> mixedSpriteData = new List<SpriteData> ();
+        List<SpriteData> gridM = new List<SpriteData> ();
+        List<SpriteData> gridN = new List<SpriteData> ();
+        List<SpriteData> gridE = new List<SpriteData> ();
+        List<SpriteData> gridS = new List<SpriteData> ();
+        List<SpriteData> gridW = new List<SpriteData> ();
+        for (int i = 0; i < baseSpriteData.Length; i++) {
+            switch (baseSpriteData[i].ornt) {
+                case ORNT.M:
+                    gridM.Add (baseSpriteData[i]);
+                    break;
+                case ORNT.N:
+                    gridN.Add (baseSpriteData[i]);
+                    break;
+                case ORNT.E:
+                    gridE.Add (baseSpriteData[i]);
+                    break;
+                case ORNT.S:
+                    gridS.Add (baseSpriteData[i]);
+                    break;
+                case ORNT.W:
+                    gridW.Add (baseSpriteData[i]);
+                    break;
+                default:
+                    break;
+            }
+        }
+        mixedSpriteData.AddRange (gridM);
+        // mixedSpriteData.AddRange (gridN);
+        // mixedSpriteData.AddRange (gridE);
+        mixedSpriteData.AddRange (gridS);
+
+        return DrawTexture (mixedSpriteData);
     }
 
     /// <summary>
@@ -22,7 +60,7 @@ public class SpriteCompose : MonoBehaviour {
     /// <param name="path"></param>
     /// <returns></returns>
     private SpriteData[] GetBaseSpriteData () {
-        Sprite[] sprites = Resources.LoadAll<Sprite> (tpath);
+        Sprite[] sprites = Resources.LoadAll<Sprite> (baseSpritePath);
         SpriteData[] baseSpriteData = new SpriteData[sprites.Length];
 
         string[][] sArray = new string[sprites.Length][];
@@ -66,40 +104,6 @@ public class SpriteCompose : MonoBehaviour {
         return baseSpriteData;
     }
 
-    private Texture2D CreateGenTexture (int width, int height, int gridWidth, int gridHeight, SpriteData[] baseSpriteData) {
-        Texture2D texture = new Texture2D (width, height);
-        // if (baseSpriteData.Length > 0) {
-        //     // SpriteData[] sortSpriteData = baseSpriteData;
-        //     // Color color;
-        //     // int x, y;
-        //     // Array.Sort (sortSpriteData, (a, b) => -a.layer.CompareTo (b.layer));
-        //     List<SpriteData> gridM = new List<SpriteData> ();
-        //     List<SpriteData> gridN = new List<SpriteData> ();
-        //     for (int i = 0; i < baseSpriteData.Length; i++) {
-        //         if (baseSpriteData[i].ornt == ORNT.M) {
-        //             gridM.Add (baseSpriteData[i]);
-        //         } else
-        //         if (baseSpriteData[i].ornt == ORNT.N) {
-        //             gridN.Add (baseSpriteData[i]);
-        //         }
-        //     }
-        //     List<SpriteData> mixGrid = new List<SpriteData> ();
-        //     mixGrid.Add (gridM[0]);
-        //     mixGrid.Add (gridN[1]);
-        //     mixGrid.Add (gridN[2]);
-        //     mixGrid.Add (gridN[3]);
-
-        //     Texture2D newGrid = ComposeSpritesGrid (mixGrid);
-        //     Color[] colors = newGrid.GetPixels ();
-        //     newGrid.SetPixels (0, 0, newGrid.width, newGrid.height, colors);
-        //     newGrid.Apply ();
-        //     Debug.Log (" ");
-        // }
-        Sprite sp = baseSpriteData[19].sprite;
-
-        return GetTexture2DFromSprite (sp);
-    }
-
     private Texture2D GetTexture2DFromSprite (Sprite sp) {
         Color[] colors = sp.texture.GetPixels (
             (int) sp.textureRect.x,
@@ -118,15 +122,15 @@ public class SpriteCompose : MonoBehaviour {
     /// </summary>
     /// <param name="spriteData"></param>
     /// <returns></returns>
-    private Texture2D ComposeSpritesGrid (List<SpriteData> spriteData) {
+    private Texture2D ComposeSpriteGridToTexture (List<SpriteData> spriteData) {
         Texture2D texture = new Texture2D ((int) spriteData[0].sprite.textureRect.width, (int) spriteData[0].sprite.textureRect.height);
         Color color;
         spriteData.Sort ((a, b) => -a.layer.CompareTo (b.layer));
         Vector2Int usedPos = new Vector2Int (-1, -1);
         int x, y;
         if (spriteData.Count > 0) {
-            for (int i = 0; i < 16; i++) {
-                for (int j = 0; j < 16; j++) {
+            for (int i = 0; i < gridWidth; i++) {
+                for (int j = 0; j < gridHeight; j++) {
                     for (int k = 0; k < spriteData.Count; k++) {
                         x = (int) spriteData[k].sprite.textureRect.x;
                         y = (int) spriteData[k].sprite.textureRect.y;
@@ -143,6 +147,33 @@ public class SpriteCompose : MonoBehaviour {
         }
         texture.filterMode = FilterMode.Point;
         texture.Apply ();
+        return texture;
+    }
+
+    private Texture2D DrawTexture (List<SpriteData> mixedSpriteData) {
+        textureWidth = Mathf.Min (maxDrawTextureWidth, mixedSpriteData.Count * gridWidth);
+        int col = textureWidth / gridWidth;
+        int row;
+        if (mixedSpriteData.Count * gridWidth > maxDrawTextureWidth) {
+            row = Mathf.CeilToInt (1f * mixedSpriteData.Count / col);
+            textureHeight = row * gridHeight;
+        } else {
+            textureHeight = gridHeight;
+        }
+        Texture2D texture = new Texture2D (textureWidth, textureHeight);
+        Color color;
+        int x, y, drawHeight;
+        for (int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                for (int k = 0; k < mixedSpriteData.Count; k++) {
+                    x = (int) mixedSpriteData[k].sprite.textureRect.x;
+                    y = (int) mixedSpriteData[k].sprite.textureRect.y;
+                    color = mixedSpriteData[k].sprite.texture.GetPixel (x + i, y + j);
+                    drawHeight = Mathf.Max (0, (Mathf.CeilToInt (1f * k / col) - 1) * gridHeight);
+                    texture.SetPixel (i + k * gridWidth, j + drawHeight, color);
+                }
+            }
+        }
         return texture;
     }
 
