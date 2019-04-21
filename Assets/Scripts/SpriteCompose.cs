@@ -13,8 +13,7 @@ public class SpriteCompose : MonoBehaviour {
     private int textureHeight = 0;
 
     public void Compose () {
-        Texture2D genTexture = CreateGenTexture ();
-        SaveTextureToFile (genTexture, saveTexturePath);
+        SaveTextureToFile (CreateGenTexture (), saveTexturePath);
     }
 
     private Texture2D CreateGenTexture () {
@@ -52,7 +51,7 @@ public class SpriteCompose : MonoBehaviour {
             mixedSprites.Add (m.sprite);
         }
 
-        //  拼合1个边，每种底图对应16种可能，共16 * 5 = 80种可能
+        //  拼合1个边，每种底图对应16种可能，共16 * 5 = 80种可能，每步一个girdM的循环是为了画的工整后面好找
         //  N+底图 组合
         for (int i = 0; i < gridM.Count; i++) {
             for (int n = 0; n < gridN.Count; n++) {
@@ -78,7 +77,7 @@ public class SpriteCompose : MonoBehaviour {
             }
         }
 
-        //  拼合2个边，NS\WE\NE\NW\SE\SW共6种情况，每种情况16种组合，5种底图，共 5 * 16 * 6 = 480种可能
+        //  拼合2个边，NS\WE\NE\NW\SE\SW共6种情况，每种情况16种组合，5种底图，共 5 * 16 * 6 = 480种可能，每步一个girdM的循环是为了画的工整后面好找
         //  N&S+底图 组合
         for (int i = 0; i < gridM.Count; i++) {
             for (int ns_n = 0; ns_n < gridN.Count; ns_n++) {
@@ -135,7 +134,6 @@ public class SpriteCompose : MonoBehaviour {
     /// 读取基础贴图的Sprite数组，组织SpriteData数据，区分中间、4外角、4内角
     /// </summary>
     /// <param name="path"></param>
-    /// <returns></returns>
     private SpriteData[] GetBaseSpriteData () {
         Sprite[] sprites = Resources.LoadAll<Sprite> (baseSpritePath);
         SpriteData[] baseSpriteData = new SpriteData[sprites.Length];
@@ -149,7 +147,6 @@ public class SpriteCompose : MonoBehaviour {
             sArray[i] = sprites[i].name.Split (',');
             sInt[i] = new int[2] { int.Parse (sArray[i][0]), int.Parse (sArray[i][1]) };
             data.pos = new Vector2Int (sInt[i][0], sInt[i][1]);
-            // data.layer = Mathf.RoundToInt (sInt[i][1] / 3);
             if (sInt[i][0] == 1 && sInt[i][1] % 3 == 1) { //M
                 data.ornt = ORNT.M;
                 data.layer = 0;
@@ -190,19 +187,6 @@ public class SpriteCompose : MonoBehaviour {
         return baseSpriteData;
     }
 
-    private Texture2D GetTexture2DFromSprite (Sprite sp) {
-        Color[] colors = sp.texture.GetPixels (
-            (int) sp.textureRect.x,
-            (int) sp.textureRect.y,
-            (int) sp.textureRect.width,
-            (int) sp.textureRect.height
-        );
-        Texture2D texture = new Texture2D ((int) sp.textureRect.width, (int) sp.textureRect.height);
-        texture.SetPixels (colors);
-        texture.Apply ();
-        return texture;
-    }
-
     /// <summary>
     /// 根据多张Sprite和其层级关系，合并出一张混合图
     /// </summary>
@@ -237,6 +221,11 @@ public class SpriteCompose : MonoBehaviour {
         return Sprite.Create (texture, new Rect (0, 0, gridWidth, gridHeight), new Vector2 (0.5f, 0.5f));
     }
 
+    /// <summary>
+    /// 根据Sprite列表和配置的贴图最大宽度，自动算出贴图的宽、高，并把sprite逐个画到贴图上，遇到边缘自动换行继续画
+    /// </summary>
+    /// <param name="mixedSpriteData"></param>
+    /// <returns></returns>
     private Texture2D DrawTexture (List<Sprite> mixedSpriteData) {
         textureWidth = Mathf.Min (maxDrawTextureWidth, mixedSpriteData.Count * gridWidth);
         int col = textureWidth / gridWidth;
@@ -265,48 +254,6 @@ public class SpriteCompose : MonoBehaviour {
     }
 
     /// <summary>
-    /// 把合并计算出的图画到现有的贴图文件的指定位置
-    /// </summary>
-    /// <param name="baseIMG">已有贴图</param>
-    /// <param name="addIMG">需要加的贴图</param>
-    /// <param name="drawPos">开始画的坐标</param>
-    /// <returns></returns>
-    private Texture2D ComposeTextures (Texture2D baseIMG, Texture2D addIMG, Vector2Int drawPos) {
-        Texture2D texture = new Texture2D (baseIMG.width, baseIMG.height);
-        Color[] colors = baseIMG.GetPixels ();
-        for (int i = 0; i < addIMG.width; i++) {
-            for (int j = 0; j < addIMG.height; j++) {
-                Color c = addIMG.GetPixel (i, j);
-                if (c.a != 0) {
-                    colors[texture.width * (j + drawPos.y) + (i + drawPos.x)] = c;
-                }
-            }
-        }
-        texture.SetPixels (0, 0, baseIMG.width, baseIMG.height, colors);
-        texture.Apply ();
-        return texture;
-    }
-
-    private Texture2D CreateNewTexture (int width, int height, int gridWidth, int gridHeight, Texture2D[] textures) {
-        Texture2D texture = new Texture2D (width, height);
-        Color[] colors = texture.GetPixels ();
-        for (int i = 0; i < textures.Length; i++) {
-            for (int x = 0; x < width; x++) {
-                for (int y = 0; y < height; y++) {
-                    if (x >= gridWidth * i && x < gridWidth * (i + 1) && y >= gridHeight * i && y < gridHeight * (i + 1)) {
-                        Color c = textures[i].GetPixel (x, y);
-                        colors[texture.width * y + x] = c;
-                    }
-                }
-            }
-        }
-        texture.SetPixels (0, 0, width, height, colors);
-        texture.Apply ();
-        return texture;
-
-    }
-
-    /// <summary>
     /// 把Texture2D保存为文件
     /// </summary>
     /// <param name="texture"></param>
@@ -324,23 +271,31 @@ public class SpriteCompose : MonoBehaviour {
 
         Debug.LogFormat ("Save texture file to path: {0}.png", path);
     }
+
+    /// <summary>
+    /// 传入一个sprite，返回一个texture
+    /// </summary>
+    /// <param name="sp"></param>
+    /// <returns></returns>
+    private Texture2D GetTexture2DFromSprite (Sprite sp) {
+        Color[] colors = sp.texture.GetPixels (
+            (int) sp.textureRect.x,
+            (int) sp.textureRect.y,
+            (int) sp.textureRect.width,
+            (int) sp.textureRect.height
+        );
+        Texture2D texture = new Texture2D ((int) sp.textureRect.width, (int) sp.textureRect.height);
+        texture.SetPixels (colors);
+        texture.Apply ();
+        return texture;
+    }
 }
 
-public enum ORNT {
-    M,
-    N,
-    NE,
-    E,
-    SE,
-    S,
-    SW,
-    W,
-    NW
-}
+public enum ORNT { M, N, NE, E, SE, S, SW, W, NW }
 
 public class SpriteData {
     public Sprite sprite = null;
     public Vector2Int pos = new Vector2Int (-1, -1);
-    public int layer = -1; //混合图片时，layer值大的覆盖小的
+    public int layer = -1;
     public ORNT ornt = ORNT.M;
 }
