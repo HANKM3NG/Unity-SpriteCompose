@@ -47,8 +47,8 @@ public class SpriteCompose : MonoBehaviour {
             }
         }
         mixedSpriteData.AddRange (gridM);
-        // mixedSpriteData.AddRange (gridN);
-        // mixedSpriteData.AddRange (gridE);
+        mixedSpriteData.AddRange (gridN);
+        mixedSpriteData.AddRange (gridE);
         mixedSpriteData.AddRange (gridS);
 
         return DrawTexture (mixedSpriteData);
@@ -153,9 +153,10 @@ public class SpriteCompose : MonoBehaviour {
     private Texture2D DrawTexture (List<SpriteData> mixedSpriteData) {
         textureWidth = Mathf.Min (maxDrawTextureWidth, mixedSpriteData.Count * gridWidth);
         int col = textureWidth / gridWidth;
-        int row;
+        int row = 1;
         if (mixedSpriteData.Count * gridWidth > maxDrawTextureWidth) {
             row = Mathf.CeilToInt (1f * mixedSpriteData.Count / col);
+            if (row == 0) row = 1;
             textureHeight = row * gridHeight;
         } else {
             textureHeight = gridHeight;
@@ -163,13 +164,13 @@ public class SpriteCompose : MonoBehaviour {
         Texture2D texture = new Texture2D (textureWidth, textureHeight);
         Color color;
         int x, y, drawHeight;
-        for (int i = 0; i < gridWidth; i++) {
-            for (int j = 0; j < gridHeight; j++) {
-                for (int k = 0; k < mixedSpriteData.Count; k++) {
+        for (int k = 0; k < mixedSpriteData.Count; k++) {
+            for (int i = 0; i < gridWidth; i++) {
+                for (int j = 0; j < gridHeight; j++) {
                     x = (int) mixedSpriteData[k].sprite.textureRect.x;
                     y = (int) mixedSpriteData[k].sprite.textureRect.y;
                     color = mixedSpriteData[k].sprite.texture.GetPixel (x + i, y + j);
-                    drawHeight = Mathf.Max (0, (Mathf.CeilToInt (1f * k / col) - 1) * gridHeight);
+                    drawHeight = Mathf.FloorToInt (1f * k / col) * gridHeight;//根据列数自动换行
                     texture.SetPixel (i + k * gridWidth, j + drawHeight, color);
                 }
             }
