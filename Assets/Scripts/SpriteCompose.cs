@@ -46,27 +46,87 @@ public class SpriteCompose : MonoBehaviour {
                     break;
             }
         }
+
+        //  画出5种底图
         foreach (SpriteData m in gridM) {
             mixedSprites.Add (m.sprite);
         }
+
+        //  拼合1个边，每种底图对应16种可能，共16 * 5 = 80种可能
+        //  N+底图 组合
         for (int i = 0; i < gridM.Count; i++) {
             for (int n = 0; n < gridN.Count; n++) {
                 if (i != n) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridN[n] }));
             }
+        }
+        //  E+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
             for (int e = 0; e < gridE.Count; e++) {
                 if (i != e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridE[e] }));
             }
+        }
+        //  S+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
             for (int s = 0; s < gridE.Count; s++) {
                 if (i != s) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridS[s] }));
             }
+        }
+        //  W+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
             for (int w = 0; w < gridE.Count; w++) {
                 if (i != w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridW[w] }));
             }
         }
 
-        // mixedSpriteData.AddRange (gridN);
-        // mixedSpriteData.AddRange (gridE);
-        // mixedSpriteData.AddRange (gridS);
+        //  拼合2个边，NS\WE\NE\NW\SE\SW共6种情况，每种情况16种组合，5种底图，共 5 * 16 * 6 = 480种可能
+        //  N&S+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
+            for (int ns_n = 0; ns_n < gridN.Count; ns_n++) {
+                for (int ns_s = 0; ns_s < gridS.Count; ns_s++) {
+                    if (i != ns_n && i != ns_s) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridN[ns_n], gridS[ns_s] }));
+                }
+            }
+        }
+        //  W&E+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
+            for (int we_w = 0; we_w < gridN.Count; we_w++) {
+                for (int we_e = 0; we_e < gridS.Count; we_e++) {
+                    if (i != we_w && i != we_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridW[we_w], gridE[we_e] }));
+                }
+            }
+        }
+        //  N&E+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
+            for (int ne_n = 0; ne_n < gridN.Count; ne_n++) {
+                for (int ne_e = 0; ne_e < gridS.Count; ne_e++) {
+                    if (i != ne_n && i != ne_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridN[ne_n], gridE[ne_e] }));
+                }
+            }
+        }
+        //  N&W+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
+            for (int nw_n = 0; nw_n < gridN.Count; nw_n++) {
+                for (int nw_w = 0; nw_w < gridS.Count; nw_w++) {
+                    if (i != nw_n && i != nw_w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridN[nw_n], gridW[nw_w] }));
+                }
+            }
+        }
+        //  S&E+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
+            for (int se_s = 0; se_s < gridN.Count; se_s++) {
+                for (int se_e = 0; se_e < gridS.Count; se_e++) {
+                    if (i != se_s && i != se_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridS[se_s], gridE[se_e] }));
+                }
+            }
+        }
+        //  S&W+底图 组合
+        for (int i = 0; i < gridM.Count; i++) {
+            for (int sw_s = 0; sw_s < gridN.Count; sw_s++) {
+                for (int sw_w = 0; sw_w < gridS.Count; sw_w++) {
+                    if (i != sw_s && i != sw_w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridS[sw_s], gridW[sw_w] }));
+                }
+            }
+        }
 
         return DrawTexture (mixedSprites);
     }
