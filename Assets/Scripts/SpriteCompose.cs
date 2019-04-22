@@ -50,6 +50,7 @@ public class SpriteCompose : MonoBehaviour {
         foreach (SpriteData m in gridM) {
             mixedSprites.Add (m.sprite);
         }
+        int gridBase = mixedSprites.Count;
 
         //  拼合1个边，每种底图对应16种可能，共16 * 5 = 80种可能，每步一个girdM的循环是为了画的工整后面好找
         //  N+底图 组合
@@ -76,6 +77,7 @@ public class SpriteCompose : MonoBehaviour {
                 if (i != w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridW[w] }));
             }
         }
+        int grid1edge = mixedSprites.Count - gridBase;
 
         //  拼合2个边，NS\WE\NE\NW\SE\SW共6种情况，每种情况16种组合，5种底图，共 5 * 16 * 6 = 480种可能，每步一个girdM的循环是为了画的工整后面好找
         //  N&S+底图 组合
@@ -126,6 +128,10 @@ public class SpriteCompose : MonoBehaviour {
                 }
             }
         }
+
+        int grid2edges = mixedSprites.Count - gridBase - grid1edge;
+
+        Debug.LogFormat ("Grid base:{0}, 1edge:{1}, 2edges:{2}", gridBase, grid1edge, grid2edges);
 
         return DrawTexture (mixedSprites);
     }
@@ -246,7 +252,8 @@ public class SpriteCompose : MonoBehaviour {
                     y = (int) mixedSpriteData[k].textureRect.y;
                     color = mixedSpriteData[k].texture.GetPixel (x + i, y + j);
                     drawHeight = Mathf.FloorToInt (1f * k / col) * gridHeight; //根据列数自动换行
-                    texture.SetPixel (i + k * gridWidth, j + drawHeight, color);
+                    texture.SetPixel (i + k * gridWidth, textureHeight - j - drawHeight - 1, color); //从左上角开始画
+                    // texture.SetPixel (i + k * gridWidth, j + drawHeight, color); //从左下角开始画
                 }
             }
         }
@@ -269,7 +276,7 @@ public class SpriteCompose : MonoBehaviour {
         Texture2D.DestroyImmediate (texture);
         texture = null;
 
-        Debug.LogFormat ("Save texture file to path: {0}.png", path);
+        Debug.LogFormat ("Save texture file to path: {0}.png  Texture width:{1}, height:{2}", path, textureWidth, textureHeight);
     }
 
     /// <summary>
