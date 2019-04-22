@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class SpriteCompose : MonoBehaviour {
+public class TextureCompose : MonoBehaviour {
     public int maxDrawTextureWidth = 80;
     public string baseSpritePath = "MultipleSprites/ground"; //文件夹名/文件名（不含后缀名）
     public string saveTexturePath = "Resources/GenSprites/genTex";
@@ -17,13 +17,13 @@ public class SpriteCompose : MonoBehaviour {
     }
 
     private Texture2D CreateGenTexture () {
-        SpriteData[] baseSpriteData = GetBaseSpriteData ();
+        BaseSpriteData[] baseSpriteData = GetBaseSpriteData ();
         List<Sprite> mixedSprites = new List<Sprite> ();
-        List<SpriteData> gridM = new List<SpriteData> ();
-        List<SpriteData> gridN = new List<SpriteData> ();
-        List<SpriteData> gridE = new List<SpriteData> ();
-        List<SpriteData> gridS = new List<SpriteData> ();
-        List<SpriteData> gridW = new List<SpriteData> ();
+        List<BaseSpriteData> gridM = new List<BaseSpriteData> ();
+        List<BaseSpriteData> gridN = new List<BaseSpriteData> ();
+        List<BaseSpriteData> gridE = new List<BaseSpriteData> ();
+        List<BaseSpriteData> gridS = new List<BaseSpriteData> ();
+        List<BaseSpriteData> gridW = new List<BaseSpriteData> ();
         for (int i = 0; i < baseSpriteData.Length; i++) {
             switch (baseSpriteData[i].ornt) {
                 case ORNT.M:
@@ -47,7 +47,7 @@ public class SpriteCompose : MonoBehaviour {
         }
 
         //  画出5种底图
-        foreach (SpriteData m in gridM) {
+        foreach (BaseSpriteData m in gridM) {
             mixedSprites.Add (m.sprite);
         }
         int gridBase = mixedSprites.Count;
@@ -56,25 +56,25 @@ public class SpriteCompose : MonoBehaviour {
         //  N+底图 组合
         for (int i = 0; i < gridM.Count; i++) {
             for (int n = 0; n < gridN.Count; n++) {
-                if (i != n) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridN[n] }));
+                if (i != n) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridN[n] }));
             }
         }
         //  E+底图 组合
         for (int i = 0; i < gridM.Count; i++) {
             for (int e = 0; e < gridE.Count; e++) {
-                if (i != e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridE[e] }));
+                if (i != e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridE[e] }));
             }
         }
         //  S+底图 组合
         for (int i = 0; i < gridM.Count; i++) {
             for (int s = 0; s < gridE.Count; s++) {
-                if (i != s) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridS[s] }));
+                if (i != s) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridS[s] }));
             }
         }
         //  W+底图 组合
         for (int i = 0; i < gridM.Count; i++) {
             for (int w = 0; w < gridE.Count; w++) {
-                if (i != w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridW[w] }));
+                if (i != w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridW[w] }));
             }
         }
         int grid1edge = mixedSprites.Count - gridBase;
@@ -84,7 +84,7 @@ public class SpriteCompose : MonoBehaviour {
         for (int i = 0; i < gridM.Count; i++) {
             for (int ns_n = 0; ns_n < gridN.Count; ns_n++) {
                 for (int ns_s = 0; ns_s < gridS.Count; ns_s++) {
-                    if (i != ns_n && i != ns_s) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridN[ns_n], gridS[ns_s] }));
+                    if (i != ns_n && i != ns_s) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridN[ns_n], gridS[ns_s] }));
                 }
             }
         }
@@ -92,7 +92,7 @@ public class SpriteCompose : MonoBehaviour {
         for (int i = 0; i < gridM.Count; i++) {
             for (int we_w = 0; we_w < gridN.Count; we_w++) {
                 for (int we_e = 0; we_e < gridS.Count; we_e++) {
-                    if (i != we_w && i != we_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridW[we_w], gridE[we_e] }));
+                    if (i != we_w && i != we_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridW[we_w], gridE[we_e] }));
                 }
             }
         }
@@ -100,7 +100,7 @@ public class SpriteCompose : MonoBehaviour {
         for (int i = 0; i < gridM.Count; i++) {
             for (int ne_n = 0; ne_n < gridN.Count; ne_n++) {
                 for (int ne_e = 0; ne_e < gridS.Count; ne_e++) {
-                    if (i != ne_n && i != ne_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridN[ne_n], gridE[ne_e] }));
+                    if (i != ne_n && i != ne_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridN[ne_n], gridE[ne_e] }));
                 }
             }
         }
@@ -108,7 +108,7 @@ public class SpriteCompose : MonoBehaviour {
         for (int i = 0; i < gridM.Count; i++) {
             for (int nw_n = 0; nw_n < gridN.Count; nw_n++) {
                 for (int nw_w = 0; nw_w < gridS.Count; nw_w++) {
-                    if (i != nw_n && i != nw_w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridN[nw_n], gridW[nw_w] }));
+                    if (i != nw_n && i != nw_w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridN[nw_n], gridW[nw_w] }));
                 }
             }
         }
@@ -116,7 +116,7 @@ public class SpriteCompose : MonoBehaviour {
         for (int i = 0; i < gridM.Count; i++) {
             for (int se_s = 0; se_s < gridN.Count; se_s++) {
                 for (int se_e = 0; se_e < gridS.Count; se_e++) {
-                    if (i != se_s && i != se_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridS[se_s], gridE[se_e] }));
+                    if (i != se_s && i != se_e) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridS[se_s], gridE[se_e] }));
                 }
             }
         }
@@ -124,7 +124,7 @@ public class SpriteCompose : MonoBehaviour {
         for (int i = 0; i < gridM.Count; i++) {
             for (int sw_s = 0; sw_s < gridN.Count; sw_s++) {
                 for (int sw_w = 0; sw_w < gridS.Count; sw_w++) {
-                    if (i != sw_s && i != sw_w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<SpriteData> { gridM[i], gridS[sw_s], gridW[sw_w] }));
+                    if (i != sw_s && i != sw_w) mixedSprites.Add (ComposeSpriteDataListToSprite (new List<BaseSpriteData> { gridM[i], gridS[sw_s], gridW[sw_w] }));
                 }
             }
         }
@@ -140,15 +140,15 @@ public class SpriteCompose : MonoBehaviour {
     /// 读取基础贴图的Sprite数组，组织SpriteData数据，区分中间、4外角、4内角
     /// </summary>
     /// <param name="path"></param>
-    private SpriteData[] GetBaseSpriteData () {
+    private BaseSpriteData[] GetBaseSpriteData () {
         Sprite[] sprites = Resources.LoadAll<Sprite> (baseSpritePath);
-        SpriteData[] baseSpriteData = new SpriteData[sprites.Length];
+        BaseSpriteData[] baseSpriteData = new BaseSpriteData[sprites.Length];
 
         string[][] sArray = new string[sprites.Length][];
         int[][] sInt = new int[sprites.Length][];
 
         for (int i = 0; i < sprites.Length; i++) {
-            var data = baseSpriteData[i] = new SpriteData ();
+            var data = baseSpriteData[i] = new BaseSpriteData ();
             data.sprite = sprites[i];
             sArray[i] = sprites[i].name.Split (',');
             sInt[i] = new int[2] { int.Parse (sArray[i][0]), int.Parse (sArray[i][1]) };
@@ -198,7 +198,7 @@ public class SpriteCompose : MonoBehaviour {
     /// </summary>
     /// <param name="spriteData"></param>
     /// <returns></returns>
-    private Sprite ComposeSpriteDataListToSprite (List<SpriteData> spriteData) {
+    private Sprite ComposeSpriteDataListToSprite (List<BaseSpriteData> spriteData) {
         Texture2D texture = new Texture2D ((int) spriteData[0].sprite.textureRect.width, (int) spriteData[0].sprite.textureRect.height);
         Color color;
         spriteData.Sort ((a, b) => -a.layer.CompareTo (b.layer));
@@ -300,7 +300,7 @@ public class SpriteCompose : MonoBehaviour {
 
 public enum ORNT { M, N, NE, E, SE, S, SW, W, NW }
 
-public class SpriteData {
+public class BaseSpriteData {
     public Sprite sprite = null;
     public Vector2Int pos = new Vector2Int (-1, -1);
     public int layer = -1;

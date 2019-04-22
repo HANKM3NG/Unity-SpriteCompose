@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-public class SpriteResourceSetting : AssetPostprocessor {
+public class TextureResourceSetting : AssetPostprocessor {
     private string KeyWordsSprite = "Sprites"; //文件夹名字包含Sprite或Sprites就自动改
     private string KeyWordsMultiple = "Multiple"; //文件夹名字包含Multiple就自动改
     private int SliceWidth = 16;

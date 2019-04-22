@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
-[CustomEditor (typeof (SpriteCompose))]
-public class SpriteComposeEditor : Editor {
+[CustomEditor (typeof (TextureCompose))]
+public class TextureComposeEditor : Editor {
     public override void OnInspectorGUI () {
-        SpriteCompose s = (SpriteCompose) target;
+        TextureCompose s = (TextureCompose) target;
         if (GUILayout.Button ("Compose")) {
             s.Compose ();
             AssetDatabase.Refresh ();   //刷新Asset资源目录
